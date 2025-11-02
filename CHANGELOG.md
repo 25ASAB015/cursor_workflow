@@ -23,8 +23,6 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - **`.gitignore`**: Configuración para ignorar archivos binarios en `bin/*`
   - Evita que se trackeen scripts ejecutables temporales o generados
 
-- **`cursor_workflow.code-workspace`**: Archivo de workspace de VS Code/Cursor
-  - Configuración básica del workspace para el proyecto
 
 #### Estructura de directorios
 
