@@ -1,0 +1,47 @@
+Proyecto: Cursor workflow (estandarizado desde 25ASAB015_cursor_workflow)
+Idioma: Español
+Objetivo: Estandarizar el flujo de trabajo en Cursor con GitKraken CLI (gk), commits/PRs con IA y utilidades locales.
+
+Requisitos (local):
+- gk (GitKraken CLI) autenticado
+- gh (GitHub CLI) opcional para abrir PRs
+- git y jq
+- Gemini CLI o GEMINI_API_KEY (fallback en commits IA)
+
+Convenciones:
+- Mensajería de commit: Conventional Commits en español + emoji por tipo.
+- Branching: feature/bugfix siguiendo el nombre pasado a /start o -b/--branch de gk.
+- PRs: descripción generada por IA (gk ai pr create); abrir con gh si está disponible.
+
+Comandos slash planificados (aún por desarrollar, no implementados):
+
+- /start "{name}" [--base-branch <str>] [-b|--branch <str>] [--include-repos csv] [--exclude-repos csv] [-i|--issue KEY]
+  Planeado para ejecutar ./.cursor/bin/start.sh y delegar en `gk work start`.
+- /commit [-d|--add-description] [--no-force] [-p|--path <dir>]
+  Planeado para ejecutar ./.cursor/bin/commit.sh, usando `gk ai commit` y fallback a Gemini si falla.
+- /push [--create-pr|--pr] [-f|--force]
+  Planeado para ejecutar ./.cursor/bin/push.sh (gk work push). Si --create-pr, intentará abrir/crear PR con gh.
+- /create-pull-request [-p|--path <dir>] [-y|--yes|--ask] [--open]
+  Planeado para ejecutar ./.cursor/bin/create-pull-request.sh (gk ai pr create) y podría abrir el PR.
+- /clone <repo_url> <name>
+  Planeado para ejecutar ./.cursor/bin/clone.sh vía la herramienta `try` en ~/src/tries y abrir Cursor.
+
+Flujo recomendado:
+1) /start "feat: <resumen>" [-b feat/<slug>] [-i ABC-123]
+2) Implementa cambios (tests, lint, refactor).
+3) /commit -d
+4) /push --create-pr
+5) /create-pull-request --open (si hace falta reintentar/abrir)
+6) Revisión y merge en github (PR).
+
+Notas de carpeta:
+- Scripts: .cursor/bin/*.sh
+- Docs de comandos: .cursor/commands/*.md
+- Roles (placeholder): .cursor/agents/*.md
+- Autenticación Gemini: geminiauth.md
+
+Directrices para el asistente (Cursor):
+- Prioriza usar los scripts del proyecto a través de los slash commands anteriores.
+- Genera commits y PRs en español, respetando Conventional Commits + emoji.
+- No reimplementar lógica de gk/gh ni modificar .cursor/bin salvo petición explícita.
+- Si gk AI falla, indica/usa el fallback de Gemini 
