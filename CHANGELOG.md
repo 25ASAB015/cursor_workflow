@@ -1,5 +1,18 @@
 # Changelog
 
+Todas las notable changes de este proyecto se documentan aquí.
+
+## 0.1.0 - 2025-11-03
+
+- feat(commit): agrega wrapper `./.cursor/bin/commit.sh` que usa `gk ai commit --force` y fallback automático a Gemini vía API Key (`./.cursor/bin/ai-commit-gemini.sh`).
+- docs(commit): actualiza `./.cursor/commands/commit.md` con uso, requisitos y configuración de `GEMINI_API_KEY`.
+- feat(commit): soporte `--all` y nuevo flag `--push` para empujar la rama tras crear el commit.
+- chore: marca scripts como ejecutables.
+- fix(commit): elimina flags no soportados en `gk ai commit` y evita confirmaciones interactivas.
+- docs(start): referencia de uso en `./.cursor/commands/start.md`.
+
+# Changelog
+
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
