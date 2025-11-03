@@ -12,6 +12,8 @@ Todas las notable changes de este proyecto se documentan aquí.
 - docs(start): referencia de uso en `./.cursor/commands/start.md`.
 - feat(push): agrega `./.cursor/bin/push.sh` basado en `gk work push` con soporte `--create-pr|--pr` y `-f|--force`; intenta abrir/crear PR con `gh` si está disponible.
 - docs(push): añade `./.cursor/commands/push.md` con uso básico y ayuda.
+- feat(pr): agrega `./.cursor/bin/create-pull-request.sh` basado en `gk ai pr create` y opción `--open` para abrir el PR con `gh`.
+- docs(pr): añade `./.cursor/commands/create-pull-request.md` con uso básico y ayuda.
 
 # Changelog
 
