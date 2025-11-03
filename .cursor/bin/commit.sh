@@ -75,12 +75,12 @@ fi
 run_gk() {
   # Ejecuta gk si está disponible. Intentos no interactivos.
   command -v gk >/dev/null 2>&1 || return 127
-  # Intento no interactivo: responder afirmativamente al prompt
-  if printf "y\n" | gk ai commit; then
-    return 0
+  # Ejecuta con --force para evitar prompts interactivos según la documentación
+  local args=(ai commit --force)
+  if [[ ${add_description} -eq 1 ]]; then
+    args+=(--add-description)
   fi
-  # Intento simple (por si no requiere confirmación)
-  gk ai commit && return 0
+  gk "${args[@]}" && return 0
   return 1
 }
 
