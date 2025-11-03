@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Non-interactive fzf stub: prints first line from stdin
+head -n 1
+
+

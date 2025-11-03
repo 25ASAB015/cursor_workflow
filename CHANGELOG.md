@@ -15,6 +15,8 @@ Todas las notable changes de este proyecto se documentan aquí.
 - feat(pr): agrega `./.cursor/bin/create-pull-request.sh` basado en `gk ai pr create` y opción `--open` para abrir el PR con `gh`.
 - docs(pr): añade `./.cursor/commands/create-pull-request.md` con uso básico y ayuda.
 - fix(pr): reescribe `create-pull-request.sh` para capturar salida de `gk ai pr create` y usar `gh pr create` sin prompts interactivos; soluciona bloqueo por confirmación manual.
+- feat(clone): agrega `./.cursor/bin/clone.sh` que usa `try` para clonar repos en `~/src/tries` y abre Cursor automáticamente.
+- docs(clone): añade `./.cursor/commands/clone.md` con uso básico y parámetros.
 
 # Changelog
 
