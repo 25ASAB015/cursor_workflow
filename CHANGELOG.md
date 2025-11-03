@@ -10,6 +10,8 @@ Todas las notable changes de este proyecto se documentan aquí.
 - chore: marca scripts como ejecutables.
 - fix(commit): elimina flags no soportados en `gk ai commit` y evita confirmaciones interactivas.
 - docs(start): referencia de uso en `./.cursor/commands/start.md`.
+- feat(push): agrega `./.cursor/bin/push.sh` basado en `gk work push` con soporte `--create-pr|--pr` y `-f|--force`; intenta abrir/crear PR con `gh` si está disponible.
+- docs(push): añade `./.cursor/commands/push.md` con uso básico y ayuda.
 
 # Changelog
 
