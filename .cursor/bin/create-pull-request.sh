@@ -81,33 +81,79 @@ done
 
 logo "ai pr create"
 
+# Estrategia: capturar salida de gk ai pr create y parsear título/descripción
+# Luego usar gh pr create con esos datos para evitar prompts interactivos
+
 cmd=( gk ai pr create )
 [[ -n "$repo_path" ]] && cmd+=( --path "$repo_path" )
 
-echo "${CBL}Ejecutando:${CNC} ${cmd[*]}"
-if [[ $auto_yes -eq 1 ]]; then
-    # Intenta auto-confirmar: responde 'y' si GK pregunta
-    if printf 'y\n' | "${cmd[@]}"; then
-        status=0
-    else
-        status=$?
-    fi
-else
-    if "${cmd[@]}"; then
-        status=0
-    else
-        status=$?
-    fi
-fi
+echo "${CBL}Generando título y descripción con AI...${CNC}"
 
-if [[ $status -eq 0 ]]; then
-    echo "${CGR}✓ Pull Request creado con AI${CNC}"
-    if [[ $open_after -eq 1 ]] && command -v gh >/dev/null 2>&1; then
-        gh pr view --web >/dev/null 2>&1 || gh pr create --fill --web >/dev/null 2>&1 || true
+# Ejecutar gk ai pr create y capturar salida hasta el prompt
+# Usamos timeout y capturamos stdout/stderr
+temp_output=$(mktemp)
+trap "rm -f '$temp_output'" EXIT
+
+# Ejecutar con timeout de 30s y enviar 'n' para cancelar después de capturar
+if timeout 30s bash -c "echo 'n' | ${cmd[*]}" > "$temp_output" 2>&1 || true; then
+    # Parsear título y descripción de la salida
+    pr_title=$(grep -A1 "^Title:" "$temp_output" | tail -1 | sed 's/^[[:space:]]*//')
+    pr_description=$(sed -n '/^Description:/,/^Do you want to proceed/p' "$temp_output" | grep -v "^Description:" | grep -v "^Do you want to proceed" | sed 's/^[[:space:]]*//' | sed '/^$/d')
+    
+    if [[ -z "$pr_title" ]]; then
+        echo "${CRE}Error:${CNC} no se pudo generar título con gk ai pr create" >&2
+        echo "${CYE}Salida capturada:${CNC}" >&2
+        cat "$temp_output" >&2
+        exit 1
+    fi
+    
+    echo "${CGR}Título generado:${CNC} $pr_title"
+    echo "${CGR}Descripción generada:${CNC}"
+    echo "$pr_description"
+    echo ""
+    
+    # Crear PR con gh usando los datos generados
+    if ! command -v gh >/dev/null 2>&1; then
+        echo "${CRE}Error:${CNC} GitHub CLI 'gh' no está instalado. Instala 'gh' para crear PRs." >&2
+        exit 127
+    fi
+    
+    echo "${CBL}Creando PR con GitHub CLI...${CNC}"
+    if [[ $auto_yes -eq 1 ]]; then
+        # Crear PR directamente
+        if gh pr create --title "$pr_title" --body "$pr_description"; then
+            echo "${CGR}✓ Pull Request creado con AI${CNC}"
+            if [[ $open_after -eq 1 ]]; then
+                gh pr view --web >/dev/null 2>&1 || true
+            fi
+        else
+            status=$?
+            echo "${CRE}Error:${CNC} fallo 'gh pr create' (rc=$status)" >&2
+            exit $status
+        fi
+    else
+        # Modo interactivo: mostrar y pedir confirmación
+        echo ""
+        read -p "¿Crear PR con estos datos? [y/N]: " confirm
+        if [[ "$confirm" =~ ^[yY]$ ]]; then
+            if gh pr create --title "$pr_title" --body "$pr_description"; then
+                echo "${CGR}✓ Pull Request creado con AI${CNC}"
+                if [[ $open_after -eq 1 ]]; then
+                    gh pr view --web >/dev/null 2>&1 || true
+                fi
+            else
+                status=$?
+                echo "${CRE}Error:${CNC} fallo 'gh pr create' (rc=$status)" >&2
+                exit $status
+            fi
+        else
+            echo "${CYE}Cancelado por el usuario${CNC}"
+            exit 0
+        fi
     fi
 else
-    echo "${CRE}Error:${CNC} fallo 'gk ai pr create' (rc=$status)" >&2
-    exit $status
+    echo "${CRE}Error:${CNC} timeout o fallo al ejecutar gk ai pr create" >&2
+    exit 1
 fi
 
 exit 0
