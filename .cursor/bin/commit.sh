@@ -11,13 +11,13 @@ set -Eeuo pipefail
 #   - git, jq (para fallback), curl (para fallback)
 #
 # Uso:
-#   ./.cursor/bin/commit.sh [-p|--path <repo_dir>] [--all] [-d|--add-description] [-h|--help]
+#   ./.cursor/bin/commit.sh [-p|--path <repo_dir>] [--all] [--push] [-d|--add-description] [-h|--help]
 #
 
 print_help() {
   cat <<'EOF'
 Uso:
-  ./.cursor/bin/commit.sh [-p|--path <repo_dir>] [--all] [-d|--add-description]
+  ./.cursor/bin/commit.sh [-p|--path <repo_dir>] [--all] [--push] [-d|--add-description]
 
 Descripción:
   Intenta crear un commit con `gk ai commit`. Si no está disponible o falla,
@@ -26,6 +26,7 @@ Descripción:
 Opciones:
   -p, --path <repo_dir>     Directorio del repo (por defecto: $PWD)
       --all                 Comitea todos los cambios tracked (equivalente a -a)
+      --push                Empuja la rama después de crear el commit
   -d, --add-description     (Compat) Genera cuerpo del commit (fallback ya lo hace)
   -h, --help                Muestra esta ayuda
 
@@ -39,6 +40,7 @@ repo_path="${PWD}"
 use_all=0
 # Flag compat, no se usa explícitamente: el fallback ya genera body
 add_description=0
+do_push=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -48,6 +50,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --all)
       use_all=1
+      shift
+      ;;
+    --push)
+      do_push=1
       shift
       ;;
     -d|--add-description)
@@ -84,22 +90,44 @@ run_gk() {
   return 1
 }
 
+commit_done=0
 if run_gk; then
   echo "✓ Commit creado con gk ai commit" >&2
+  commit_done=1
+else
+  echo "Aviso: usando fallback Gemini (API)" >&2
+
+  fallback_script="$(dirname "$0")/ai-commit-gemini.sh"
+  [[ -x "${fallback_script}" ]] || { echo "No se encuentra ${fallback_script} ejecutable" >&2; exit 2; }
+
+  args=( )
+  args+=( --path "${repo_path}" )
+  if [[ ${use_all} -eq 1 ]]; then
+    args+=( --all )
+  fi
+
+  if "${fallback_script}" "${args[@]}"; then
+    commit_done=1
+  else
+    commit_done=0
+  fi
+fi
+
+if [[ ${commit_done} -eq 1 && ${do_push} -eq 1 ]]; then
+  if command -v gk >/dev/null 2>&1; then
+    # Empuja con GitKraken; si falla, intenta git push
+    if ! gk work push; then
+      git push
+    fi
+  else
+    git push
+  fi
+fi
+
+if [[ ${commit_done} -eq 1 ]]; then
   exit 0
+else
+  exit 1
 fi
-
-echo "Aviso: usando fallback Gemini (API)" >&2
-
-fallback_script="$(dirname "$0")/ai-commit-gemini.sh"
-[[ -x "${fallback_script}" ]] || { echo "No se encuentra ${fallback_script} ejecutable" >&2; exit 2; }
-
-args=( )
-args+=( --path "${repo_path}" )
-if [[ ${use_all} -eq 1 ]]; then
-  args+=( --all )
-fi
-
-"${fallback_script}" "${args[@]}"
 
 
