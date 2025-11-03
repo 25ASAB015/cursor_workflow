@@ -19,7 +19,7 @@ set -Eeuo pipefail
 #
 # Ejemplos
 #   /start "feat: onboarding"
-#   /start "cool new work" -b feat/cool --base-branch main -i ABC-123
+#   /start "cool new work" -b feat/cool --base-branch master -i ABC-123
 #   /start "fix: bug" --include-repos repo-1,repo-2 --exclude-repos legacy-repo
 #
 # Requisitos

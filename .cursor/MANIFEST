@@ -1,0 +1,27 @@
+# MANIFEST - Lista de archivos de cursor_workflow
+# Este archivo lista todos los archivos que se instalan con cursor_workflow
+# Formato: ruta_relativa (un archivo por línea)
+# Los comentarios empiezan con #
+
+# Scripts ejecutables
+.cursor/bin/ai-commit-gemini.sh
+.cursor/bin/clone.sh
+.cursor/bin/commit.sh
+.cursor/bin/create-pull-request.sh
+.cursor/bin/fzf
+.cursor/bin/push.sh
+.cursor/bin/start.sh
+
+# Documentación de comandos slash
+.cursor/commands/clone.md
+.cursor/commands/commit.md
+.cursor/commands/create-pull-request.md
+.cursor/commands/push.md
+.cursor/commands/start.md
+
+# README
+.cursor/README.md
+
+# Manifest
+.cursor/MANIFEST
+

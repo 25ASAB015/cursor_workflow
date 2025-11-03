@@ -1,2 +1,67 @@
+# Configuración local (sensible)
+config.sh
+.env
+.env.local
+
+# Backups de instalación
+.cursor.backup.*
+
+# Archivos de workspace
+*.code-workspace
+.vscode/
+.idea/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+
+# Node modules (si se agrega algún componente Node.js en el futuro)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Python (si se agregan herramientas Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# Archivos de prueba y desarrollo
+test/
+tests/
+*.test.*
+
+# Credenciales y tokens
+*.pem
+*.key
+.token
+.credentials
+
+# Directorios de build (si se usan en el futuro)
+build/
+dist/
+
+# Cache
+.cache/
+
+# Archivos específicos del proyecto que no deben subirse
 bin/*
-cursor_workflow.code-workspace
+!.cursor/bin/
+
+# Archivos de error
+error.log
+debug.log
